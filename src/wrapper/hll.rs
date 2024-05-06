@@ -3,6 +3,7 @@
 use cxx;
 
 use crate::bridge::ffi;
+use crate::DataSketchesError;
 
 /// Specifies the target type of HLL sketch to be created. It is a target in that the actual
 /// allocation of the HLL array is deferred until sufficient number of items have been received by
@@ -61,13 +62,10 @@ impl HLLSketch {
         UPtrVec(self.inner.serialize())
     }
 
-    pub fn deserialize(buf: &[u8]) -> Self {
-        // TODO: this could be friendlier, it currently terminates
-        // the program no bad deserialization, and instead can be a
-        // Result.
-        Self {
-            inner: ffi::deserialize_opaque_hll_sketch(buf),
-        }
+    pub fn deserialize(buf: &[u8]) -> Result<Self, DataSketchesError> {
+        Ok(Self {
+            inner: ffi::deserialize_opaque_hll_sketch(buf)?,
+        })
     }
 }
 
@@ -107,9 +105,9 @@ mod tests {
     fn check_cycle(s: &HLLSketch) {
         let est = s.estimate();
         let bytes = s.serialize();
-        let cpy = HLLSketch::deserialize(bytes.as_ref());
-        let cpy2 = HLLSketch::deserialize(bytes.as_ref());
-        let cpy3 = HLLSketch::deserialize(bytes.as_ref());
+        let cpy = HLLSketch::deserialize(bytes.as_ref()).unwrap();
+        let cpy2 = HLLSketch::deserialize(bytes.as_ref()).unwrap();
+        let cpy3 = HLLSketch::deserialize(bytes.as_ref()).unwrap();
         assert_eq!(est, cpy.estimate());
         assert_eq!(est, cpy2.estimate());
         assert_eq!(est, cpy3.estimate());
@@ -222,7 +220,7 @@ mod tests {
             base64::STANDARD_NO_PAD,
         )
         .unwrap();
-        let hh = HLLSketch::deserialize(&bytes);
+        let hh = HLLSketch::deserialize(&bytes).unwrap();
 
         assert_eq!(hh.estimate(), 4.000000029802323);
     }
@@ -234,16 +232,24 @@ mod tests {
             base64::STANDARD_NO_PAD,
         )
         .unwrap();
-        let hh1 = HLLSketch::deserialize(&bytes);
+        let hh1 = HLLSketch::deserialize(&bytes).unwrap();
 
         let bytes = base64::decode_config(
             "AgEHDAMABAgGc2UEe2XmCNsXmgrDsDgEAAAAAAAAAAAAAAAAAAAAAA==",
             base64::STANDARD_NO_PAD,
         )
         .unwrap();
-        let hh2 = HLLSketch::deserialize(&bytes);
+        let hh2 = HLLSketch::deserialize(&bytes).unwrap();
 
         assert_eq!(hh1.estimate(), 4.000000029802323);
         assert_eq!(hh2.estimate(), 4.000000029802323);
+    }
+
+    #[test]
+    fn hll_deserialization_error() {
+        assert!(matches!(
+            HLLSketch::deserialize(&[9, 9, 9, 9]),
+            Err(DataSketchesError::CXXError(_))
+        ));
     }
 }

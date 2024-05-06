@@ -59,7 +59,9 @@ pub(crate) mod ffi {
             lg_k: u32,
             tgt_type: target_hll_type,
         ) -> UniquePtr<OpaqueHLLSketch>;
-        pub(crate) fn deserialize_opaque_hll_sketch(buf: &[u8]) -> UniquePtr<OpaqueHLLSketch>;
+        pub(crate) fn deserialize_opaque_hll_sketch(
+            buf: &[u8],
+        ) -> Result<UniquePtr<OpaqueHLLSketch>>;
 
         pub(crate) type OpaqueHLLUnion;
 
