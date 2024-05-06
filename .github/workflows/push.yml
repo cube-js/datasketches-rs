@@ -23,6 +23,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
+      - name: Install coreutils
+        run: brew install coreutils
       - name: Run cargo build
         run: cargo build
       - name: Run cargo test
