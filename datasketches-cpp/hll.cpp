@@ -36,6 +36,10 @@ datasketches::target_hll_type OpaqueHLLSketch::get_target_type() const {
   return this->inner_.get_target_type();
 }
 
+uint8_t OpaqueHLLSketch::get_lg_config_k() const {
+  return this->inner_.get_lg_config_k();
+}
+
 std::unique_ptr<std::vector<uint8_t>> OpaqueHLLSketch::serialize() const {
   // TODO: could use a custom streambuf to avoid the
   // stream -> vec copy https://stackoverflow.com/a/13059195/1779853
@@ -78,6 +82,10 @@ void OpaqueHLLUnion::merge(std::unique_ptr<OpaqueHLLSketch> to_add) {
 
 datasketches::target_hll_type OpaqueHLLUnion::get_target_type() const {
   return this->inner_.get_target_type();
+}
+
+uint8_t OpaqueHLLUnion::get_lg_config_k() const {
+  return this->inner_.get_lg_config_k();
 }
 
 std::unique_ptr<OpaqueHLLUnion> new_opaque_hll_union(uint8_t lg_max_k) {

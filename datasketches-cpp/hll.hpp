@@ -20,6 +20,7 @@ public:
   friend std::unique_ptr<OpaqueHLLSketch> deserialize_opaque_hll_sketch(rust::Slice<const uint8_t> buf);
   OpaqueHLLSketch(unsigned lg_k, datasketches::target_hll_type tgt_type);
   datasketches::target_hll_type get_target_type() const;
+  uint8_t get_lg_config_k() const;
 private:
   OpaqueHLLSketch(datasketches::hll_sketch&& hll);
   OpaqueHLLSketch(std::istream& is);
@@ -36,6 +37,7 @@ public:
   void merge(std::unique_ptr<OpaqueHLLSketch> to_add);
   OpaqueHLLUnion(uint8_t lg_max_k);
   datasketches::target_hll_type get_target_type() const;
+  uint8_t get_lg_config_k() const;
 private:
   datasketches::hll_union inner_;
 };

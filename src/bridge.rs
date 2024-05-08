@@ -56,6 +56,7 @@ pub(crate) mod ffi {
         pub(crate) fn update_u64(self: Pin<&mut OpaqueHLLSketch>, value: u64);
         pub(crate) fn serialize(self: &OpaqueHLLSketch) -> UniquePtr<CxxVector<u8>>;
         pub(crate) fn get_target_type(self: &OpaqueHLLSketch) -> target_hll_type;
+        pub(crate) fn get_lg_config_k(self: &OpaqueHLLSketch) -> u8;
 
         pub(crate) fn new_opaque_hll_sketch(
             lg_k: u32,
@@ -74,6 +75,7 @@ pub(crate) mod ffi {
         ) -> UniquePtr<OpaqueHLLSketch>;
         pub(crate) fn merge(self: Pin<&mut OpaqueHLLUnion>, to_add: UniquePtr<OpaqueHLLSketch>);
         pub(crate) fn get_target_type(self: &OpaqueHLLUnion) -> target_hll_type;
+        pub(crate) fn get_lg_config_k(self: &OpaqueHLLUnion) -> u8;
 
         include!("dsrs/datasketches-cpp/theta.hpp");
 

@@ -57,6 +57,11 @@ impl HLLSketch {
         self.inner.get_target_type()
     }
 
+    /// Returns sketch's configured lg_k value
+    pub fn get_lg_config_k(&self) -> u8 {
+        self.inner.get_lg_config_k()
+    }
+
     pub fn serialize(&self) -> impl AsRef<[u8]> {
         struct UPtrVec(cxx::UniquePtr<cxx::CxxVector<u8>>);
         impl AsRef<[u8]> for UPtrVec {
@@ -97,6 +102,11 @@ impl HLLUnion {
     /// Returns the union's target HLL mode
     pub fn get_target_type(&self) -> HLLType {
         self.inner.get_target_type()
+    }
+
+    /// Returns union's configured lg_k value
+    pub fn get_lg_config_k(&self) -> u8 {
+        self.inner.get_lg_config_k()
     }
 
     /// Retrieve the current unioned sketch as a copy.
@@ -153,6 +163,7 @@ mod tests {
     #[test]
     fn hll_simple_test_hll4() {
         let mut hh = HLLSketch::new(12, HLLType::HLL_4);
+        assert_eq!(hh.get_lg_config_k(), 12);
         assert_eq!(hh.get_target_type(), HLLType::HLL_4);
 
         assert_eq!(hh.estimate(), 0.0);
@@ -171,6 +182,7 @@ mod tests {
     #[test]
     fn hll_simple_test_hll6() {
         let mut hh = HLLSketch::new(12, HLLType::HLL_6);
+        assert_eq!(hh.get_lg_config_k(), 12);
         assert_eq!(hh.get_target_type(), HLLType::HLL_6);
 
         assert_eq!(hh.estimate(), 0.0);
@@ -189,6 +201,7 @@ mod tests {
     #[test]
     fn hll_simple_test_hll8() {
         let mut hh = HLLSketch::new(12, HLLType::HLL_8);
+        assert_eq!(hh.get_lg_config_k(), 12);
         assert_eq!(hh.get_target_type(), HLLType::HLL_8);
 
         assert_eq!(hh.estimate(), 0.0);
@@ -211,6 +224,7 @@ mod tests {
 
         let mut union = HLLUnion::new(12);
         assert_eq!(union.get_target_type(), HLLType::HLL_8);
+        assert_eq!(union.get_lg_config_k(), 12);
 
         union.merge(hll);
         union.merge(HLLSketch::new(12, HLLType::HLL_4));
