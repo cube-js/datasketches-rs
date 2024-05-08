@@ -52,6 +52,11 @@ impl HLLSketch {
         self.inner.pin_mut().update_u64(value)
     }
 
+    /// Returns the sketch's target HLL mode
+    pub fn get_target_type(&self) -> HLLType {
+        self.inner.get_target_type()
+    }
+
     pub fn serialize(&self) -> impl AsRef<[u8]> {
         struct UPtrVec(cxx::UniquePtr<cxx::CxxVector<u8>>);
         impl AsRef<[u8]> for UPtrVec {
@@ -87,6 +92,11 @@ impl HLLUnion {
 
     pub fn merge(&mut self, sketch: HLLSketch) {
         self.inner.pin_mut().merge(sketch.inner)
+    }
+
+    /// Returns the union's target HLL mode
+    pub fn get_target_type(&self) -> HLLType {
+        self.inner.get_target_type()
     }
 
     /// Retrieve the current unioned sketch as a copy.
@@ -141,8 +151,46 @@ mod tests {
     }
 
     #[test]
-    fn hll_simple_test() {
+    fn hll_simple_test_hll4() {
         let mut hh = HLLSketch::new(12, HLLType::HLL_4);
+        assert_eq!(hh.get_target_type(), HLLType::HLL_4);
+
+        assert_eq!(hh.estimate(), 0.0);
+
+        hh.update_u64(1);
+        hh.update_u64(2);
+        hh.update_u64(3);
+        hh.update_u64(4);
+        hh.update_u64(5);
+
+        assert_eq!(hh.estimate(), 5.000000049670538);
+
+        println!("{:?}", hh.estimate());
+    }
+
+    #[test]
+    fn hll_simple_test_hll6() {
+        let mut hh = HLLSketch::new(12, HLLType::HLL_6);
+        assert_eq!(hh.get_target_type(), HLLType::HLL_6);
+
+        assert_eq!(hh.estimate(), 0.0);
+
+        hh.update_u64(1);
+        hh.update_u64(2);
+        hh.update_u64(3);
+        hh.update_u64(4);
+        hh.update_u64(5);
+
+        assert_eq!(hh.estimate(), 5.000000049670538);
+
+        println!("{:?}", hh.estimate());
+    }
+
+    #[test]
+    fn hll_simple_test_hll8() {
+        let mut hh = HLLSketch::new(12, HLLType::HLL_8);
+        assert_eq!(hh.get_target_type(), HLLType::HLL_8);
+
         assert_eq!(hh.estimate(), 0.0);
 
         hh.update_u64(1);
@@ -162,6 +210,8 @@ mod tests {
         assert_eq!(hll.estimate(), 0.0);
 
         let mut union = HLLUnion::new(12);
+        assert_eq!(union.get_target_type(), HLLType::HLL_8);
+
         union.merge(hll);
         union.merge(HLLSketch::new(12, HLLType::HLL_4));
         let cpc = union.sketch(HLLType::HLL_4);

@@ -18,6 +18,7 @@ pub(crate) mod ffi {
         unsafe fn remove_from_hashset(hashset_addr: usize, addr: usize);
     }
 
+    #[derive(Debug, Eq)]
     #[repr(i32)]
     enum target_hll_type {
         HLL_4,
@@ -54,6 +55,7 @@ pub(crate) mod ffi {
         pub(crate) fn update(self: Pin<&mut OpaqueHLLSketch>, buf: &[u8]);
         pub(crate) fn update_u64(self: Pin<&mut OpaqueHLLSketch>, value: u64);
         pub(crate) fn serialize(self: &OpaqueHLLSketch) -> UniquePtr<CxxVector<u8>>;
+        pub(crate) fn get_target_type(self: &OpaqueHLLSketch) -> target_hll_type;
 
         pub(crate) fn new_opaque_hll_sketch(
             lg_k: u32,
@@ -71,6 +73,7 @@ pub(crate) mod ffi {
             tgt_type: target_hll_type,
         ) -> UniquePtr<OpaqueHLLSketch>;
         pub(crate) fn merge(self: Pin<&mut OpaqueHLLUnion>, to_add: UniquePtr<OpaqueHLLSketch>);
+        pub(crate) fn get_target_type(self: &OpaqueHLLUnion) -> target_hll_type;
 
         include!("dsrs/datasketches-cpp/theta.hpp");
 
