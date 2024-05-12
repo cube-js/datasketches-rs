@@ -5,7 +5,6 @@ fn main() {
     let src = PathBuf::from("src");
     let mut bridge = cxx_build::bridge(src.join("bridge.rs"));
 
-    assert!(bridge.is_flag_supported("-std=c++11").expect("supported"));
     bridge
         .files(&[
             datasketches.join("cpc.cpp"),
@@ -19,7 +18,7 @@ fn main() {
 
     // MSVC doesn't plan to implement C++11 switch, because they use c++14 by default
     #[cfg(not(target_env = "msvc"))]
-    bridge.flag_if_supported("-std=c++11");
+    assert!(bridge.flag_if_supported("-std=c++11").expect("supported"));
 
     bridge.compile("libdatasketches.a");
 }
