@@ -18,7 +18,7 @@ fn main() {
 
     // MSVC doesn't plan to implement C++11 switch, because they use c++14 by default
     #[cfg(not(target_env = "msvc"))]
-    assert!(bridge.flag_if_supported("-std=c++11").expect("supported"));
+    bridge.flag_if_supported("-std=c++11");
 
     bridge.compile("libdatasketches.a");
 }
