@@ -13,7 +13,7 @@ license = "Apache-2.0"
 
 [dependencies]
 cxx = "1.0"
-structopt = "0.3"
+clap = { version = "4.4", features = ["derive"] }
 bstr = "0.2"
 memchr = "2.3"
 base64 = "0.13"
